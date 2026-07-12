@@ -72,10 +72,12 @@ ZSH_THEME="robbyrussell"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 
+# Must be set before OMZ loads the plugin
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+
 source $ZSH/oh-my-zsh.sh
 
 # Syntax highlighting colors
-ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
 typeset -g ZSH_HIGHLIGHT_STYLES[command]=fg=cyan,bold
 typeset -g ZSH_HIGHLIGHT_STYLES[alias]=fg=magenta,bold
 typeset -g ZSH_HIGHLIGHT_STYLES[builtin]=fg=yellow,bold
