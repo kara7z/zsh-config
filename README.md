@@ -1,6 +1,19 @@
 # Zsh & Tmux Config
 
+## Requirements
+
+- [Oh My Zsh](https://ohmyz.sh/)
+- Git
+
 ## Installation
+
+**1. Install Oh My Zsh** (if not already installed):
+
+```bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+```
+
+**2. Clone and run setup:**
 
 ```bash
 git clone https://github.com/kara7z/zsh-config.git ~/zsh-config
@@ -8,11 +21,14 @@ cd ~/zsh-config
 ./setup.sh
 ```
 
-## Tmux plugins
+**3. Restart your shell:**
 
-Open tmux and press `prefix + I` (Capital I) to install TPM plugins.
+```bash
+source ~/.zshrc
+```
 
-## Requirements
+Or open a new terminal.
 
-- [Oh My Zsh](https://ohmyz.sh/)
-- [TPM](https://github.com/tmux-plugins/tpm) (installed by setup.sh)
+**4. Open tmux and install plugins:**
+
+Press `prefix + I` (Capital I) to install TPM plugins (tmux-resurrect, tmux-continuum).
