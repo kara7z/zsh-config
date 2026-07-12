@@ -14,6 +14,7 @@ ln -sf "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
 ln -sf "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
 
 ZSH_CUSTOM="${ZSH_CUSTOM:-$ZSH/custom}"
+mkdir -p "$ZSH_CUSTOM/plugins"
 
 # Install Oh My Zsh plugins
 install_omz_plugin() {
@@ -29,6 +30,7 @@ install_omz_plugin "zsh-autosuggestions" "https://github.com/zsh-users/zsh-autos
 install_omz_plugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-syntax-highlighting"
 
 # Install TPM if not present
+mkdir -p "$HOME/.tmux/plugins"
 if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
   git clone https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
 fi
