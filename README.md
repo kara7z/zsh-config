@@ -15,4 +15,4 @@ Open tmux and press `prefix + I` (Capital I) to install TPM plugins.
 ## Requirements
 
 - [Oh My Zsh](https://ohmyz.sh/)
-- [TPM](https://github.com/tmux-plugins/tpm) (installed automatically on first tmux launch)
+- [TPM](https://github.com/tmux-plugins/tpm) (installed by setup.sh)
