@@ -3,10 +3,17 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+ZSH="${ZSH:-$HOME/.oh-my-zsh}"
+if [ ! -d "$ZSH" ]; then
+  echo "Oh My Zsh is not installed at $ZSH."
+  echo "Install it first: https://ohmyz.sh/"
+  exit 1
+fi
+
 ln -sf "$SCRIPT_DIR/.zshrc" "$HOME/.zshrc"
 ln -sf "$SCRIPT_DIR/.tmux.conf" "$HOME/.tmux.conf"
 
-ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+ZSH_CUSTOM="${ZSH_CUSTOM:-$ZSH/custom}"
 
 # Install Oh My Zsh plugins
 install_omz_plugin() {
