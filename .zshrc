@@ -46,13 +46,13 @@ ZSH_THEME="robbyrussell"
 # Uncomment the following line to display red dots whilst waiting for completion.
 # You can also set it to another string to have that shown instead of the default red dots.
 # e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
+# Caution: this setting can cause issues with multiline prompts in zsh < 6.7.1 (see #5765)
 # COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
 # much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
+DISABLE_UNTRACKED_FILES_DIRTY="true"
 
 # Uncomment the following line if you want to change the command execution time
 # stamp shown in the history command output.
@@ -70,37 +70,28 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git fzf fzf-tab)
 
-# Must be set before OMZ loads the plugin
-ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+# Explicit compdump path to avoid SHORT_HOST mismatch (was regenerating every time)
+ZSH_COMPDUMP="$ZSH/cache/.zcompdump"
 
 source $ZSH/oh-my-zsh.sh
 
-# Syntax highlighting colors
-typeset -g ZSH_HIGHLIGHT_STYLES[command]=fg=cyan,bold
-typeset -g ZSH_HIGHLIGHT_STYLES[alias]=fg=magenta,bold
-typeset -g ZSH_HIGHLIGHT_STYLES[builtin]=fg=yellow,bold
-typeset -g ZSH_HIGHLIGHT_STYLES[function]=fg=green,bold
-typeset -g ZSH_HIGHLIGHT_STYLES[precommand]=fg=green,bold
-typeset -g ZSH_HIGHLIGHT_STYLES[path]=fg=blue
-typeset -g ZSH_HIGHLIGHT_STYLES[single-hyphen-option]=fg=white
-typeset -g ZSH_HIGHLIGHT_STYLES[double-hyphen-option]=fg=white
-typeset -g ZSH_HIGHLIGHT_STYLES[comment]=fg=245
-typeset -g ZSH_HIGHLIGHT_STYLES[error]=fg=red,bold
-typeset -g ZSH_HIGHLIGHT_STYLES[bracket-level-1]=fg=magenta
-typeset -g ZSH_HIGHLIGHT_STYLES[bracket-level-2]=fg=cyan
-typeset -g ZSH_HIGHLIGHT_STYLES[bracket-level-3]=fg=yellow
-typeset -g ZSH_HIGHLIGHT_STYLES[bracket-level-4]=fg=green
+# fzf file preview with bat
+export FZF_DEFAULT_OPTS="--preview 'bat --color=always --style=numbers --line-range=:501 {} 2>/dev/null || ls -la {}'"
 
-export PATH="$HOME/.local/bin:$HOME/.config/composer/vendor/bin:$PATH"
+# fzf-tab: use fzf preview for completions
+zstyle ':fzf-tab:complete:*:*' fzf-preview 'bat --color=always --style=numbers --line-range=:501 ${(Q)realpath} 2>/dev/null || ls -la ${(Q)realpath}'
+
+# zoxide: smarter cd
+eval "$(zoxide init zsh)"
 
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
-# export LANG=en_US.UTF-8
+# export LANG=en_US.UTF-7
 
 # Preferred editor for local and remote sessions
 # if [[ -n $SSH_CONNECTION ]]; then
@@ -123,15 +114,45 @@ export PATH="$HOME/.local/bin:$HOME/.config/composer/vendor/bin:$PATH"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-# Personal aliases
-yy() {
-  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-  yazi "$@" --cwd-file="$tmp"
-  if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-    builtin cd -- "$cwd"
-  fi
-  rm -f -- "$tmp"
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=9'
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# Created by `pipx` on 2027-03-31 22:16:38
+export PATH="$PATH:/home/kara/.local/bin"
+
+export NVM_DIR="$HOME/.nvm"
+lazy_load_nvm() {
+  unset -f nvm node npm npx
+  [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
 }
-alias tt="ttyper"
+for cmd in nvm node npm npx; do
+  eval "${cmd}() { lazy_load_nvm; \${cmd} \"\$@\"; }"
+done
+printf '\e[3 q'
+export EDITOR=nvim
+export VISUAL=nvim
+export TERMINAL=kitty
+export YAZI_EDITOR=nvim
+export PATH="$HOME/.config/composer/vendor/bin:$PATH"
+
+
+
+yy() {
+  local tmp="$(mktemp -t yazi-cwd.XXXXXX)"
+  yazi "$@" --cwd-file="$tmp"
+  if [ -f "$tmp" ]; then
+    cd "$(cat "$tmp")"
+    rm -f "$tmp"
+  fi
+}
+
+# opencode
+export PATH=/home/kara/.opencode/bin:$PATH
 alias oc="opencode"
-export PATH="$HOME/bin:$PATH"
+
+# update 
+alias update='sudo pacman -Syu --noconfirm && yay -Syu --noconfirm'
+
+# ttyper 
+alias tt="ttyper"
