@@ -114,7 +114,10 @@ alias oc="opencode"
 
 # System update
 alias update='sudo pacman -Syu --noconfirm && yay -Syu --noconfirm'
-
+#install 
+alias install="sudo pacman -S"
+#Search
+alias search="sudo pacman -Ss"
 # Ttyper
 alias tt="ttyper"
 
