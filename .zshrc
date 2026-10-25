@@ -2,7 +2,17 @@
 # Oh My Zsh
 # ============================================================
 
-export ZSH="/usr/share/oh-my-zsh"
+# Respect an existing installation, then check common user/system locations.
+for zsh_dir in "${ZSH:-}" "$HOME/.oh-my-zsh" \
+    "$HOME/.nix-profile/share/oh-my-zsh" \
+    "/etc/profiles/per-user/$USER/share/oh-my-zsh" \
+    /run/current-system/sw/share/oh-my-zsh /usr/share/oh-my-zsh; do
+    if [[ -r "$zsh_dir/oh-my-zsh.sh" ]]; then
+        export ZSH="$zsh_dir"
+        break
+    fi
+done
+unset zsh_dir
 
 ZSH_THEME="robbyrussell"
 
@@ -10,13 +20,16 @@ ZSH_THEME="robbyrussell"
 plugins=(git)
 
 # Keep completion cache in a fixed location
-ZSH_COMPDUMP="$ZSH/cache/.zcompdump"
+ZSH_COMPDUMP="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/.zcompdump"
 
 # Don't check untracked files in Git repositories
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 
 # Load Oh My Zsh
-source "$ZSH/oh-my-zsh.sh"
+if [[ -n "$ZSH" && -r "$ZSH/oh-my-zsh.sh" ]]; then
+    mkdir -p "${ZSH_COMPDUMP:h}"
+    source "$ZSH/oh-my-zsh.sh"
+fi
 
 
 # ============================================================
@@ -24,7 +37,9 @@ source "$ZSH/oh-my-zsh.sh"
 # ============================================================
 
 # Enable fzf's Zsh integration
-source <(fzf --zsh)
+if (( $+commands[fzf] )); then
+    source <(fzf --zsh)
+fi
 
 # fzf preview with bat
 export FZF_DEFAULT_OPTS="--preview 'bat --color=always --style=numbers --line-range=:501 {} 2>/dev/null || ls -la {}'"
@@ -34,7 +49,9 @@ export FZF_DEFAULT_OPTS="--preview 'bat --color=always --style=numbers --line-ra
 # Zoxide
 # ============================================================
 
-eval "$(zoxide init zsh)"
+if (( $+commands[zoxide] )); then
+    eval "$(zoxide init zsh)"
+fi
 
 
 # ============================================================
@@ -43,7 +60,21 @@ eval "$(zoxide init zsh)"
 
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=9'
 
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+# Support setup.sh's custom plugins as well as distro/Nix packages.
+source_zsh_plugin() {
+    local plugin="$1" base
+    for base in "${ZSH_CUSTOM:-${ZSH:-$HOME/.oh-my-zsh}/custom}/plugins" \
+        "$HOME/.nix-profile/share" "/etc/profiles/per-user/$USER/share" \
+        /run/current-system/sw/share /usr/share/zsh/plugins /usr/share; do
+        if [[ -r "$base/$plugin/$plugin.zsh" ]]; then
+            source "$base/$plugin/$plugin.zsh"
+            return
+        fi
+    done
+    return 0
+}
+
+source_zsh_plugin zsh-autosuggestions
 
 
 # ============================================================
@@ -51,7 +82,8 @@ source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 # ============================================================
 
 # Keep syntax highlighting LAST among Zsh plugins
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source_zsh_plugin zsh-syntax-highlighting
+unfunction source_zsh_plugin
 
 
 # ============================================================

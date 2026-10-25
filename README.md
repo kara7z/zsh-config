@@ -5,6 +5,22 @@
 - [Oh My Zsh](https://ohmyz.sh/)
 - Git
 
+Optional integrations: `fzf`, `zoxide`, `zsh-autosuggestions`, and
+`zsh-syntax-highlighting`. Missing integrations are skipped. Oh My Zsh is
+loaded from `$ZSH`, `~/.oh-my-zsh`, or a supported system/Nix profile.
+
+On NixOS, install the optional tools persistently by adding these packages to
+`environment.systemPackages` in your NixOS configuration and rebuilding:
+
+```nix
+environment.systemPackages = with pkgs; [
+  fzf
+  zoxide
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+];
+```
+
 ## Installation
 
 **1. Install zsh** (if not already installed):
